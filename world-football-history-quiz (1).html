@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Football &amp; History Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Bebas+Neue&family=Rajdhani:wght@500;700&family=Merriweather:wght@400;700&family=Playfair+Display:wght@600;700&family=Orbitron:wght@500;700&family=Poppins:wght@400;600&family=Exo+2:wght@500;700&family=Rubik:wght@500;700&family=Montserrat:wght@600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0e0f12;
+    --card-radius: 18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background: radial-gradient(circle at 20% -10%, #1b1d24 0%, #0a0b0d 55%, #050506 100%);
+    color:#f2f2f2;
+    min-height:100vh;
+    padding:20px 14px 90px;
+  }
+  header{
+    text-align:center;
+    margin-bottom:22px;
+  }
+  header h1{
+    font-family:'Poppins',sans-serif;
+    font-weight:700;
+    font-size:1.6rem;
+    letter-spacing:.5px;
+    background:linear-gradient(90deg,#ffd76b,#ff8a5c 45%,#7cd6ff);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p{
+    color:#9a9ba3;
+    font-size:.85rem;
+    margin-top:6px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:12px;
+    max-width:720px;
+    margin:0 auto;
+  }
+  .card{
+    position:relative;
+    border-radius:var(--card-radius);
+    padding:16px 14px 14px;
+    cursor:pointer;
+    overflow:hidden;
+    min-height:118px;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    border:1px solid rgba(255,255,255,.08);
+    transition:transform .18s ease, box-shadow .18s ease;
+    isolation:isolate;
+  }
+  .card:active{transform:scale(.96);}
+  .card::before{
+    content:"";
+    position:absolute;inset:0;
+    background:var(--grad);
+    opacity:.92;
+    z-index:-1;
+  }
+  .card .emoji{
+    font-size:1.7rem;
+    margin-bottom:8px;
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));
+  }
+  .card .title{
+    font-weight:700;
+    font-size:.95rem;
+    line-height:1.2;
+    color:#fff;
+    text-shadow:0 1px 3px rgba(0,0,0,.35);
+  }
+  .card .sub{
+    font-size:.68rem;
+    color:rgba(255,255,255,.85);
+    margin-top:3px;
+  }
+  .card .qcount{
+    position:absolute;
+    top:10px;right:10px;
+    background:rgba(0,0,0,.28);
+    color:#fff;
+    font-size:.62rem;
+    padding:2px 7px;
+    border-radius:20px;
+    font-weight:600;
+  }
+
+  /* ===== Quiz overlay ===== */
+  .overlay{
+    position:fixed;inset:0;
+    background:var(--qbg);
+    display:none;
+    flex-direction:column;
+    z-index:50;
+    font-family:var(--qfont);
+    color:var(--qtext);
+  }
+  .overlay.active{display:flex;}
+  .qtop{
+    display:flex;align-items:center;gap:10px;
+    padding:16px 16px 10px;
+  }
+  .backBtn{
+    background:rgba(255,255,255,.12);
+    border:none;color:inherit;
+    width:34px;height:34px;border-radius:50%;
+    font-size:1rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .progWrap{
+    flex:1;height:8px;border-radius:6px;
+    background:rgba(255,255,255,.15);
+    overflow:hidden;
+  }
+  .progBar{
+    height:100%;border-radius:6px;
+    background:var(--qaccent);
+    width:0%;
+    transition:width .3s ease;
+  }
+  .scoreTag{
+    font-size:.78rem;font-weight:700;
+    background:rgba(255,255,255,.12);
+    padding:5px 10px;border-radius:20px;
+    white-space:nowrap;
+  }
+  .qbody{
+    flex:1;
+    padding:10px 20px 20px;
+    display:flex;flex-direction:column;
+    max-width:520px;width:100%;margin:0 auto;
+    overflow-y:auto;
+  }
+  .quizTitle{
+    font-size:1.15rem;
+    font-weight:700;
+    margin-bottom:2px;
+    color:var(--qaccent);
+  }
+  .qnum{
+    font-size:.75rem;
+    color:var(--qtext);
+    opacity:.65;
+    margin-bottom:14px;
+  }
+  .question{
+    font-size:1.15rem;
+    font-weight:600;
+    line-height:1.45;
+    margin-bottom:20px;
+  }
+  .options{
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .opt{
+    text-align:left;
+    padding:13px 16px;
+    border-radius:13px;
+    border:1.5px solid var(--qborder);
+    background:var(--qoptbg);
+    color:var(--qtext);
+    font-family:inherit;
+    font-size:.95rem;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .opt:active{transform:scale(.98);}
+  .opt.correct{
+    background:#1f9d55 !important;
+    border-color:#1f9d55 !important;
+    color:#fff !important;
+  }
+  .opt.wrong{
+    background:#c93b3b !important;
+    border-color:#c93b3b !important;
+    color:#fff !important;
+  }
+  .opt.disabled{pointer-events:none;opacity:.75;}
+  .factBox{
+    margin-top:18px;
+    padding:14px 16px;
+    border-radius:13px;
+    background:var(--qoptbg);
+    border-left:4px solid var(--qaccent);
+    font-size:.85rem;
+    line-height:1.5;
+    display:none;
+  }
+  .factBox.show{display:block;}
+  .nextBtn{
+    margin-top:20px;
+    padding:14px;
+    border:none;border-radius:13px;
+    background:var(--qaccent);
+    color:#111;
+    font-weight:700;
+    font-size:.95rem;
+    cursor:pointer;
+    display:none;
+  }
+  .nextBtn.show{display:block;}
+
+  /* result screen */
+  .resultWrap{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:30px 24px;
+    max-width:480px;margin:0 auto;
+  }
+  .resultWrap .big{font-size:3rem;margin-bottom:6px;}
+  .resultWrap h2{font-size:1.4rem;margin-bottom:6px;color:var(--qaccent);}
+  .resultWrap p{font-size:.9rem;opacity:.8;margin-bottom:22px;}
+  .resultBtns{display:flex;gap:10px;width:100%;}
+  .resultBtns button{
+    flex:1;padding:13px;border-radius:12px;border:none;font-weight:700;cursor:pointer;font-family:inherit;
+  }
+  .retryBtn{background:var(--qaccent);color:#111;}
+  .homeBtn{background:rgba(255,255,255,.12);color:var(--qtext);}
+
+  .credit{
+    position:fixed;
+    bottom:8px;right:12px;
+    font-size:.62rem;
+    color:rgba(255,255,255,.35);
+    z-index:5;
+    letter-spacing:.3px;
+  }
+  .credit.inQuiz{color:var(--qtext);opacity:.35;}
+
+  @media (max-width:360px){
+    .grid{grid-template-columns:repeat(2,1fr);}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌍 World Football &amp; History</h1>
+  <p>2 Quizzes • 100+ Questions Each • Latest 2026 Info</p>
+</header>
+
+<div class="grid" id="grid"></div>
+<div class="credit">by Ahmed Bilal</div>
+
+<div class="overlay" id="overlay">
+  <div class="qtop">
+    <button class="backBtn" id="backBtn">✕</button>
+    <div class="progWrap"><div class="progBar" id="progBar"></div></div>
+    <div class="scoreTag" id="scoreTag">0/0</div>
+  </div>
+  <div class="qbody" id="qbody"></div>
+  <div class="credit inQuiz">by Ahmed Bilal</div>
+</div>
+
+<script>
+
+const QUIZZES = [
+{
+  id:'football', title:'World Football', sub:'FIFA • WC 2026', emoji:'⚽',
+  grad:'linear-gradient(135deg,#062b16,#0e5c2e 55%,#e8e8e8)',
+  theme:{bg:'#04170c', font:"'Bebas Neue',sans-serif", accent:'#5fe37e', text:'#f0fff2', border:'rgba(95,227,126,.3)', optbg:'rgba(255,255,255,.06)'},
+  questions:[
+    {q:'Football match ka standard duration kitna hota hai?', o:['80 minutes','90 minutes','100 minutes','120 minutes'], a:1, f:'Football match 90 minutes (2 halves of 45 minutes) ka hota hai.'},
+    {q:'Ek football team mein field par kitne players hote hain (goalkeeper included)?', o:['9','10','11','12'], a:2, f:'Har team ke 11 players field par hote hain, goalkeeper samet.'},
+    {q:'Football mein \'Offside\' rule ka basic concept kya hai?', o:['Attacker ball pass hote waqt aakhri defender se aagay na ho','Player ne foul kiya ho','Player ne card lia ho','Substitution rule hai'], a:0, f:'Offside rule ke mutabiq attacker ball pass hone ke waqt aakhri defender (goalkeeper ke ilawa) se aagay nahi hona chahiye.'},
+    {q:'Football mein \'Hat-trick\' ka matlab kya hai?', o:['3 goals ek match mein ek player ke','3 assists','3 red cards','3 fouls'], a:0, f:'Jab ek player single match mein 3 goals kare, usay hat-trick kehte hain.'},
+    {q:'Football mein \'Red Card\' ka natija kya hota hai?', o:['Player field se bahar, team ek player kam ho jati hai','Sirf warning','Penalty kick milta hai','Extra time milta hai'], a:0, f:'Red Card player ko match se bahar kar deta hai aur team us ki jagah kisi ko field nahi kar sakti.'},
+    {q:'Football mein \'Yellow Card\' ka matlab kya hai?', o:['Warning','Player expel','Goal cancel','Extra time'], a:0, f:'Yellow Card ek official warning hai, do yellow cards milne par player red card (expulsion) ka shikar hota hai.'},
+    {q:'Penalty kick kis distance se liya jata hai?', o:['9 meters','11 meters','15 meters','18 meters'], a:1, f:'Penalty kick goal line se 11 meters (12 yards) ki distance se li jati hai.'},
+    {q:'Football pitch ki standard length kitni hoti hai (approximately)?', o:['90-120 meters','60-80 meters','150 meters','50 meters'], a:0, f:'FIFA standards ke mutabiq football pitch ki length 90 se 120 meters ke darmiyan hoti hai.'},
+    {q:'Pehla FIFA World Cup kis saal aur kahan khela gaya?', o:['1930, Uruguay','1934, Italy','1938, France','1950, Brazil'], a:0, f:'Pehla FIFA World Cup 1930 mein Uruguay mein khela gaya, jisay khud Uruguay ne jeeta.'},
+    {q:'FIFA World Cup kitne saal ke waqfay se khela jata hai?', o:['2 saal','3 saal','4 saal','5 saal'], a:2, f:'FIFA World Cup har 4 saal baad khela jata hai.'},
+    {q:'Brazil ne kitni baar FIFA World Cup jeeta hai — record kitna hai?', o:['4 baar','5 baar','6 baar','3 baar'], a:1, f:'Brazil ne 5 baar World Cup jeeta hai (1958, 1962, 1970, 1994, 2002) — sab se zyada kisi bhi team se.'},
+    {q:'2022 FIFA World Cup (Qatar) ka winner kaun bana?', o:['France','Brazil','Argentina','Croatia'], a:2, f:'Argentina ne final mein France ko penalties par hara kar apna 3rd World Cup jeeta.'},
+    {q:'2022 World Cup final ka Man of the Match kaun bana?', o:['Kylian Mbappe','Lionel Messi','Julian Alvarez','Antoine Griezmann'], a:1, f:'Lionel Messi ko final ki performance par Man of the Match chuna gaya — unka aakhri World Cup title.'},
+    {q:'2022 World Cup final mein Kylian Mbappe ne kitne goals kiye — hat-trick?', o:['2','3','4','1'], a:1, f:'Kylian Mbappe ne final mein hat-trick ki, magar Argentina phir bhi penalties mein jeet gaya.'},
+    {q:'2018 FIFA World Cup ka champion kaun bana?', o:['Germany','France','Croatia','Belgium'], a:1, f:'France ne 2018 World Cup Russia mein jeeta, Croatia ko final mein hara kar.'},
+    {q:'2014 FIFA World Cup ka winner kaun bana?', o:['Argentina','Germany','Brazil','Netherlands'], a:1, f:'Germany ne 2014 World Cup Brazil mein jeeta, final mein Argentina ko hara kar.'},
+    {q:'2010 FIFA World Cup ka winner kaun bana?', o:['Spain','Netherlands','Germany','Uruguay'], a:0, f:'Spain ne apna pehla World Cup 2010 mein South Africa mein jeeta.'},
+    {q:'2006 FIFA World Cup ka winner kaun bana?', o:['France','Italy','Brazil','Germany'], a:1, f:'Italy ne 2006 World Cup Germany mein jeeta, final mein France ko penalties par hara kar.'},
+    {q:'Italy ne total kitni baar World Cup jeeta hai?', o:['2 baar','3 baar','4 baar','5 baar'], a:2, f:'Italy ne 4 baar World Cup jeeta hai — Brazil ke baad sab se zyada.'},
+    {q:'Germany ne total kitni baar World Cup jeeta hai?', o:['2 baar','3 baar','4 baar','5 baar'], a:2, f:'Germany (aur pehle West Germany) ne 4 baar World Cup jeeta hai.'},
+    {q:'Argentina ne total kitni baar World Cup jeeta hai (2022 ke baad)?', o:['2 baar','3 baar','4 baar','1 baar'], a:1, f:'Argentina ne total 3 baar World Cup jeeta hai — 1978, 1986 aur 2022.'},
+    {q:'2026 FIFA World Cup ki host countries kaun si thin?', o:['Canada, Mexico, USA','USA, Brazil, Mexico','Canada, USA, England','Qatar, UAE, Saudi Arabia'], a:0, f:'Pehli baar 3 countries ne mil kar World Cup host kiya — Canada, Mexico aur United States.'},
+    {q:'2026 FIFA World Cup ka champion kaun bana?', o:['Argentina','France','Spain','England'], a:2, f:'Spain ne Argentina ko extra-time mein 1-0 se hara kar apna 2010 ke baad pehla World Cup jeeta.'},
+    {q:'2026 World Cup final mein Spain ka winning goal kisne kiya?', o:['Lamine Yamal','Ferran Torres','Pedri','Alvaro Morata'], a:1, f:'Ferran Torres ne extra-time mein winning goal kar ke Spain ko champion banaya.'},
+    {q:'2026 World Cup final kis stadium mein khela gaya?', o:['Estadio Azteca','New York New Jersey Stadium','SoFi Stadium','Rose Bowl'], a:1, f:'2026 ka final New York New Jersey Stadium mein hua.'},
+    {q:'2026 World Cup ke Bronze medal match mein England ne kis team ko hara?', o:['Morocco','Belgium','France','Netherlands'], a:2, f:'England ne France ko 6-4 ke high-scoring match mein hara diya, jismein Bukayo Saka ne hat-trick ki.'},
+    {q:'2026 World Cup mein Argentina ne semifinal mein kis team ko hara kar final mein jagah banai?', o:['France','England','Brazil','Germany'], a:1, f:'Argentina ne apne historic rival England ko 2-1 se hara kar final mein entry li.'},
+    {q:'2026 World Cup mein Lionel Messi ne total kitne goals kiye?', o:['5','6','8','10'], a:2, f:'39 saal ki umar mein Messi ne 8 goals kar ke Argentina ko final tak pohanchaya.'},
+    {q:'2026 World Cup mein kitni teams ne pehli dafa hissa liya (expanded format)?', o:['32 teams','40 teams','48 teams','64 teams'], a:2, f:'2026 World Cup pehli baar 48 teams ke expanded format mein khela gaya.'},
+    {q:'2026 World Cup ke baad FIFA Rankings mein number 1 team kaun bani?', o:['Argentina','France','Spain','Brazil'], a:2, f:'Apni doosri World Cup jeetne ke foran baad Spain FIFA Rankings mein top par pohanch gaya.'},
+    {q:'Football history mein sab se zyada Ballon d\'Or awards kisne jeete hain?', o:['Cristiano Ronaldo','Lionel Messi','Michel Platini','Johan Cruyff'], a:1, f:'Lionel Messi ne record 8 Ballon d\'Or awards jeete hain.'},
+    {q:'Cristiano Ronaldo ne kitni baar Ballon d\'Or jeeta hai?', o:['3 baar','4 baar','5 baar','6 baar'], a:2, f:'Cristiano Ronaldo ne 5 baar Ballon d\'Or jeeta hai.'},
+    {q:'Pele ne apne career mein kitni baar World Cup jeeta?', o:['1 baar','2 baar','3 baar','4 baar'], a:2, f:'Pele ne Brazil ke sath 3 World Cups jeete — 1958, 1962 aur 1970.'},
+    {q:'Diego Maradona ka mashhoor \'Hand of God\' goal kis World Cup mein aya?', o:['1982','1986','1990','1994'], a:1, f:'Maradona ka controversial \'Hand of God\' goal 1986 World Cup quarterfinal mein England ke khilaf aya.'},
+    {q:'International football mein sab se zyada goals kis player ke naam hain (men\'s)?', o:['Cristiano Ronaldo','Lionel Messi','Ali Daei','Pele'], a:0, f:'Cristiano Ronaldo international football mein sab se zyada goals ka record rakhte hain.'},
+    {q:'Football mein \'GOAT\' debate zyada tar kin do players ke darmiyan hoti hai?', o:['Messi aur Ronaldo','Pele aur Maradona','Neymar aur Mbappe','Zidane aur Ronaldinho'], a:0, f:'Modern football mein GOAT (Greatest of All Time) debate mostly Lionel Messi aur Cristiano Ronaldo ke darmiyan hoti hai.'},
+    {q:'Zinedine Zidane ne 2006 World Cup final mein kis controversial harkat ki wajah se red card dekha?', o:['Referee ko dhakka diya','Marco Materazzi ko headbutt kiya','Ball ko haath se pakra','Opponent ko slap kiya'], a:1, f:'Zidane ne 2006 final mein Materazzi ko headbutt kiya, jis wajah se unhein red card mila.'},
+    {q:'Kylian Mbappe 2018 World Cup mein kis kam umar mein World Cup final mein goal karne wale player bane (Pele ke baad)?', o:['17 saal','18 saal','19 saal','20 saal'], a:3, f:'Mbappe 19 saal ki umar mein World Cup final mein goal karne wale Pele ke baad pehle teenager bane.'},
+    {q:'UEFA Champions League mein sab se zyada titles kis club ke naam hain?', o:['Barcelona','AC Milan','Real Madrid','Bayern Munich'], a:2, f:'Real Madrid ne UEFA Champions League record 15 baar jeeta hai.'},
+    {q:'English Premier League ka aghaz kis saal hua?', o:['1988','1992','1995','2000'], a:1, f:'English Premier League 1992 mein apni current format mein shuru hui.'},
+    {q:'Premier League mein sab se zyada titles kis club ke naam hain?', o:['Chelsea','Manchester City','Manchester United','Arsenal'], a:2, f:'Manchester United ne Premier League era mein sab se zyada (13) titles jeete hain.'},
+    {q:'Spain ki top football league ka naam kya hai?', o:['Serie A','La Liga','Bundesliga','Ligue 1'], a:1, f:'Spain ki top division \'La Liga\' kehlati hai.'},
+    {q:'Italy ki top football league ka naam kya hai?', o:['Serie A','La Liga','Bundesliga','Eredivisie'], a:0, f:'Italy ki top division \'Serie A\' kehlati hai.'},
+    {q:'Germany ki top football league ka naam kya hai?', o:['Bundesliga','La Liga','Serie A','Ligue 1'], a:0, f:'Germany ki top division \'Bundesliga\' kehlati hai.'},
+    {q:'FIFA Club World Cup 2025 (expanded 32-team format) ka winner kaun bana?', o:['Real Madrid','Manchester City','Chelsea','PSG'], a:2, f:'Chelsea ne 2025 ke naye 32-team expanded FIFA Club World Cup format mein title jeeta.'},
+    {q:'Football mein \'El Clasico\' kin do clubs ke darmiyan khela jata hai?', o:['Real Madrid vs Barcelona','Manchester United vs Liverpool','AC Milan vs Inter Milan','Bayern vs Dortmund'], a:0, f:'El Clasico Spain ke do bade rivals Real Madrid aur Barcelona ke darmiyan khela jata hai.'},
+    {q:'UEFA European Championship (Euros) kitne saal ke waqfay se hoti hai?', o:['2 saal','3 saal','4 saal','5 saal'], a:2, f:'Euros bhi World Cup ki tarah har 4 saal baad hoti hai.'},
+    {q:'Euro 2024 ka champion kaun bana?', o:['England','Spain','France','Germany'], a:1, f:'Spain ne Euro 2024 jeeta, final mein England ko hara kar.'},
+    {q:'Copa America mein sab se zyada titles kis team ke naam hain?', o:['Brazil','Argentina','Uruguay','Chile'], a:1, f:'Argentina aur Uruguay dono ke paas sab se zyada Copa America titles hain, Argentina ke paas current record 16 titles hai (joint highest).'},
+    {q:'Africa Cup of Nations (AFCON) 2025 ka champion kaun bana?', o:['Nigeria','Morocco','Ivory Coast','Egypt'], a:1, f:'Morocco ne AFCON 2025 apne home soil par jeeta.'},
+    {q:'Football mein \'Nutmeg\' ka matlab kya hota hai?', o:['Ball ko opponent ki tango ke beech se pass karna','Header se goal karna','Corner kick','Free kick'], a:0, f:'Nutmeg tab hota hai jab player ball ko opponent ki dono tango ke darmiyan se nikal de.'},
+    {q:'Football mein VAR ka full form kya hai?', o:['Video Assistant Referee','Virtual Action Review','Video Analysis Rule','Visual Aid Referee'], a:0, f:'VAR ka matlab hai \'Video Assistant Referee\' jo controversial decisions review karta hai.'},
+    {q:'Football mein \'Own Goal\' kise kehte hain?', o:['Jab player apni hi team ke khilaf goal kar de','Jab goalkeeper goal kare','Jab penalty miss ho','Jab offside ho'], a:0, f:'Own Goal tab hota hai jab defending player ghalti se apne hi goal mein ball daal de.'},
+    {q:'Football ka goalkeeper apne penalty area ke andar ball ko kis se touch kar sakta hai?', o:['Haath se','Sirf pairon se','Sar se','Koi bhi hissa nahi'], a:0, f:'Goalkeeper apne penalty area ke andar ball ko haathon se touch/pick kar sakta hai.'},
+    {q:'Corner kick kab diya jata hai?', o:['Jab defending player ball ko apni goal line se bahar bheje','Jab attacker foul kare','Jab goalkeeper ball drop kare','Har goal ke baad'], a:0, f:'Corner kick tab diya jata hai jab defending team ka player ball ko apni hi goal-line se bahar bhej de.'},
+    {q:'Football mein \'Extra Time\' kitne minutes ka hota hai (agar match tie ho knockouts mein)?', o:['15 minutes','20 minutes','30 minutes','10 minutes'], a:2, f:'Extra time do halves (15-15 minutes) mil kar total 30 minutes ka hota hai.'},
+    {q:'FIFA ka full form kya hai?', o:['Federation of International Football Associations','International Federation of Association Football','Federal International Football Alliance','French International Football Association'], a:1, f:'FIFA (French: Fédération Internationale de Football Association) ka English matlab hai \'International Federation of Association Football\'.'},
+    {q:'Football mein \'Golden Boot\' award kisay diya jata hai?', o:['Best goalkeeper ko','Tournament ke top scorer ko','Best young player ko','Best defender ko'], a:1, f:'Golden Boot ek tournament ke sab se zyada goals karne wale player ko diya jata hai.'},
+    {q:'2022 World Cup ka Golden Boot kisne jeeta?', o:['Lionel Messi','Kylian Mbappe','Olivier Giroud','Julian Alvarez'], a:1, f:'Kylian Mbappe ne 8 goals kar ke 2022 World Cup ka Golden Boot jeeta.'},
+    {q:'2026 World Cup ka Golden Boot kisne jeeta (top scorer)?', o:['Lionel Messi','Kylian Mbappe','Harry Kane','Lamine Yamal'], a:1, f:'Kylian Mbappe ek baar phir tournament ke top scorer bane 2026 World Cup mein.'},
+    {q:'Football ka sab se qadeem international match kis do teams ke darmiyan khela gaya?', o:['England vs Scotland','Brazil vs Argentina','Spain vs Portugal','France vs Belgium'], a:0, f:'Duniya ka pehla official international football match 1872 mein England aur Scotland ke darmiyan khela gaya.'},
+    {q:'Women\'s FIFA World Cup pehli baar kab khela gaya?', o:['1987','1991','1995','1999'], a:1, f:'Pehla FIFA Women\'s World Cup 1991 mein China mein khela gaya.'},
+    {q:'Women\'s World Cup mein sab se zyada titles kis team ke naam hain?', o:['Germany','USA','Brazil','Japan'], a:1, f:'USA ne Women\'s World Cup record 4 baar jeeta hai.'},
+    {q:'2023 Women\'s World Cup ka champion kaun bana?', o:['USA','England','Spain','Australia'], a:2, f:'Spain ne apna pehla Women\'s World Cup 2023 mein jeeta, final mein England ko hara kar.'},
+    {q:'Football mein \'Tiki-taka\' style kis club/country ke sath jyada associate hai?', o:['Spain/Barcelona','Germany/Bayern','England/Man City','Italy/Juventus'], a:0, f:'Tiki-taka short passing aur possession-based style hai jo Spain aur Barcelona ke sath khaas tor par juri hai.'},
+    {q:'Football mein \'Total Football\' concept kis mulk ne popularize kiya?', o:['Netherlands','Brazil','Italy','Germany'], a:0, f:'Netherlands ne 1970s mein Johan Cruyff ki wajah se \'Total Football\' ka concept popularize kiya.'},
+    {q:'Football ki sab se purani governing body FIFA kis saal bani?', o:['1900','1904','1910','1920'], a:1, f:'FIFA 1904 mein Paris mein foundation hui.'},
+    {q:'Football mein \'Man Marking\' aur \'Zonal Marking\' kis cheez se related hain?', o:['Defensive tactics','Attacking formations','Goalkeeping style','Substitution rules'], a:0, f:'Yeh dono defending ke tarike hain — ek player-specific hota hai, dusra area-specific.'},
+    {q:'Football mein sab se zyada dekhi jane wali single event kaunsi mani jati hai?', o:['Champions League Final','FIFA World Cup Final','Olympics Opening','Super Bowl'], a:1, f:'FIFA World Cup Final duniya ka sab se zyada dekha jane wala single sports event mana jata hai.'},
+    {q:'Football mein \'Free Kick\' do types ki hoti hai — konsi hain?', o:['Direct aur Indirect','Long aur Short','Corner aur Penalty','Fast aur Slow'], a:0, f:'Free kicks Direct (jisse seedha goal ho sakta hai) aur Indirect (jisme pehle kisi aur ko touch karna zaroori hai) hoti hain.'},
+    {q:'Football mein substitution ki modern limit ek match mein (regular time) kitni hai?', o:['3','5','7','Unlimited'], a:1, f:'Modern rules ke mutabiq teams regular time mein 5 substitutions kar sakti hain (COVID-era change jo permanent ho gaya).'},
+    {q:'2026 World Cup mein total kitne matches khele gaye (expanded format ki wajah se)?', o:['64','72','104','96'], a:2, f:'48-team format ki wajah se 2026 World Cup mein total 104 matches khele gaye.'},
+    {q:'Football mein \'Clean Sheet\' ka matlab kya hai?', o:['Goalkeeper/team ne match mein koi goal concede nahi kiya','Team ne match jeeta','Player ne hat-trick ki','Match draw raha'], a:0, f:'Clean Sheet tab kehte hain jab team/goalkeeper match mein koi goal concede na kare.'},
+    {q:'2026 World Cup qualifying round mein Pakistan ne hissa liya tha?', o:['Haan, achi performance di','Nahi, Pakistan FIFA World Cup qualifiers mein regular nahi khelta','Pakistan seedha qualify hua','Pakistan host tha'], a:1, f:'Pakistan football team FIFA rankings mein neechay hone ki wajah se World Cup qualification race mein competitive nahi rehti.'},
+    {q:'Football mein Ronaldinho apni kis khoobi ki wajah se mashhoor the?', o:['Skillful dribbling aur flair','Defense','Goalkeeping','Physical strength'], a:0, f:'Ronaldinho apni jadui dribbling, tricks aur flair-filled style ki wajah se dunya bhar mein mashhoor the.'},
+    {q:'Football mein Neymar kis mulk ke liye khelte hain?', o:['Argentina','Brazil','Portugal','Uruguay'], a:1, f:'Neymar Brazil ke liye khelte hain aur unke top players mein shumar hote hain.'},
+    {q:'Lamine Yamal kis mulk ke liye khelte hain?', o:['Spain','Portugal','France','Morocco'], a:0, f:'Lamine Yamal Spain ke liye khelte hain aur 2026 World Cup jeetne wali team ka hissa the.'},
+    {q:'1994 FIFA World Cup ka winner kaun bana?', o:['Italy','Brazil','Germany','Argentina'], a:1, f:'Brazil ne 1994 World Cup USA mein jeeta, final mein Italy ko penalties par hara kar.'},
+    {q:'1998 FIFA World Cup ka winner kaun bana (host country)?', o:['France','Brazil','Croatia','Netherlands'], a:0, f:'France ne apna pehla World Cup 1998 mein apne home soil par jeeta, Brazil ko final mein hara kar.'},
+    {q:'2002 FIFA World Cup kahan khela gaya (dual host)?', o:['Japan aur South Korea','China aur Japan','South Korea aur China','Japan solo'], a:0, f:'2002 World Cup Japan aur South Korea ne mil kar host kiya — Asia mein pehli baar.'},
+    {q:'2002 World Cup ka winner kaun bana?', o:['Germany','Brazil','Turkey','South Korea'], a:1, f:'Brazil ne 2002 World Cup jeeta, apna record 5th title, Ronaldo ke do goals ke sath final mein.'},
+    {q:'Football mein \'Panenka\' penalty style kis se named hai?', o:['Antonin Panenka','Diego Maradona','Pele','Zico'], a:0, f:'Panenka style penalty (soft chip goalkeeper ke sath) Czech player Antonin Panenka ke naam par hai.'},
+    {q:'Football mein sab se mehngi transfer fee ka record kis player ke naam raha hai (Neymar transfer)?', o:['Cristiano Ronaldo','Neymar','Kylian Mbappe','Lionel Messi'], a:1, f:'Neymar ka PSG transfer (2017, approximately €222 million) lambay arsay tak world record raha.'},
+    {q:'Football mein \'False 9\' role kis type ka position hai?', o:['Ek striker jo deep drop kar ke khelta hai','Defender jo forward jata hai','Goalkeeper jo penalty leta hai','Winger jo center khelta hai'], a:0, f:'False 9 aisa forward hota hai jo traditional striker position se hat kar deep midfield mein aa kar khelta hai.'},
+    {q:'Football mein \'Libero\' (sweeper) role kis era mein zyada mashhoor tha?', o:['1970s-1980s','1990s-2000s','2010s','2020s'], a:0, f:'Libero ya sweeper role 1970s-80s ki Italian aur German football mein bohat mashhoor tha.'},
+    {q:'2026 World Cup mein Morocco ne kis stage tak safar tay kiya?', o:['Group stage','Round of 16','Quarterfinal ya aage','Nahi qualify hua'], a:2, f:'Morocco ne 2022 ki tarah 2026 mein bhi impressive performance dikhate hue knockout stages mein achi dour ki (semifinal/quarterfinal level).'},
+    {q:'Football mein \'Injury Time\' (Stoppage Time) kis wajah se add hota hai?', o:['Match mein hue delays (injuries, substitutions, etc) compensate karne ke liye','Extra excitement ke liye','Sponsor requirement','TV broadcast ke liye'], a:0, f:'Injury/Stoppage time referee dwara match ke dauran hue delays ko compensate karne ke liye add kiya jata hai.'},
+    {q:'Football mein FIFA Rankings kis buniyad par calculate hoti hain?', o:['Match results aur opponent strength','Sirf population','Sirf league quality','Random draw'], a:0, f:'FIFA Rankings ek points system par based hain jo match results, opponent ki strength aur tournament importance ko dekhta hai.'},
+    {q:'Cristiano Ronaldo ne apna career kis club se shuru kiya?', o:['Real Madrid','Manchester United','Sporting CP','Juventus'], a:2, f:'Cristiano Ronaldo ne apna professional career Sporting CP (Portugal) se shuru kiya.'},
+    {q:'Lionel Messi ne apna career kis club ke academy se shuru kiya?', o:['Barcelona (La Masia)','Real Madrid','River Plate','Boca Juniors'], a:0, f:'Messi Barcelona ki famous La Masia academy se nikle the.'},
+    {q:'Football mein \'Golden Ball\' award kisay diya jata hai (World Cup context)?', o:['Tournament ke best overall player ko','Top scorer ko','Best goalkeeper ko','Best young player ko'], a:0, f:'Golden Ball World Cup ke sab se behtareen overall player ko diya jata hai (Golden Boot alag hota hai top scorer ke liye).'},
+    {q:'2022 World Cup ka Golden Ball kisne jeeta?', o:['Kylian Mbappe','Lionel Messi','Luka Modric','Julian Alvarez'], a:1, f:'Lionel Messi ne 2022 World Cup ka Golden Ball jeeta.'},
+    {q:'Football mein \'Assist\' ka matlab kya hota hai?', o:['Wo pass jo directly goal ka sabab bane','Goal karna','Penalty save karna','Foul karna'], a:0, f:'Assist us pass ya action ko kehte hain jo directly kisi goal ka sabab bane.'},
+    {q:'England ne apna akela FIFA World Cup kab jeeta?', o:['1962','1966','1970','1974'], a:1, f:'England ne apna akela World Cup 1966 mein apne home soil par jeeta.'},
+    {q:'Football mein \'Kit Number 10\' traditionally kis type ke player ko diya jata hai?', o:['Creative playmaker/attacking midfielder','Goalkeeper','Center-back','Right-back'], a:0, f:'Number 10 jersey traditionally team ke creative playmaker ya star attacker ko di jati hai.'},
+    {q:'Football mein \'Derby\' match ka matlab kya hota hai?', o:['Do rival clubs ka match, aksar same city ke','International friendly','Youth tournament match','Referee training match'], a:0, f:'Derby match do local rivals ke darmiyan hota hai, jo aksar same city ya region ke hote hain.'},
+    {q:'Manchester United aur Manchester City ke match ko kya kaha jata hai?', o:['Manchester Derby','North London Derby','El Clasico','Old Firm'], a:0, f:'Yeh match \'Manchester Derby\' kehlata hai.'},
+    {q:'Arsenal aur Tottenham ke match ko kya kaha jata hai?', o:['North London Derby','Manchester Derby','Merseyside Derby','El Clasico'], a:0, f:'Arsenal vs Tottenham match \'North London Derby\' kehlata hai.'},
+    {q:'Football mein \'Away Goals Rule\' (jo ab retire ho chuki hai) kis situation mein use hoti thi?', o:['Two-legged ties mein tie-break ke liye','Regular season mein','World Cup groups mein','Penalty shootouts mein'], a:0, f:'Away Goals Rule two-legged knockout ties mein aggregate score barabar hone par tie-break ke liye use hoti thi, ab UEFA ne ise khatam kar diya.'},
+    {q:'Football mein \'Box-to-box midfielder\' kis type ka role hota hai?', o:['Wo player jo attack aur defense dono mein active ho','Sirf defense karta hai','Sirf attack karta hai','Goalkeeper ka madadgar'], a:0, f:'Box-to-box midfielder poore field mein active hota hai, dono attacking aur defending phases mein.'},
+    {q:'2026 World Cup mein co-host USA ka team apne home crowd ke samne kis stage tak pohancha?', o:['Champion bana','Round of 16 se aage nahi ja saka ya achi dour ki','Group stage se bahar hua','Runner-up bana'], a:1, f:'USA ne home advantage ka fayda uthate hue knockout stages tak safar tay kiya, lekin title tak nahi pohancha.'},
+    {q:'Football mein \'Wall\' kis situation mein banai jati hai?', o:['Free kick defend karne ke liye','Corner attack karne ke liye','Throw-in ke liye','Kickoff ke liye'], a:0, f:'Defending team free kick ke waqt goal bachane ke liye players ki \'wall\' bana leti hai.'},
+    {q:'Football mein throw-in kis situation mein diya jata hai?', o:['Jab ball sideline se bahar jaye','Jab ball goal line se bahar jaye','Jab foul ho','Jab offside ho'], a:0, f:'Throw-in tab diya jata hai jab ball poori tarah sideline (touchline) cross kar jaye.'},
+    {q:'Football mein header se goal karna kis type ka skill mana jata hai?', o:['Aerial ability','Ground passing','Dribbling','Tackling'], a:0, f:'Header se goal karna player ki aerial ability aur timing ka acha demonstration hota hai.'},
+    {q:'2026 World Cup se pehle Spain ne apna aakhri World Cup kab jeeta tha?', o:['2006','2010','2014','2018'], a:1, f:'Spain ne apna pehla World Cup 2010 mein jeeta tha, 2026 se pehle ka unka akela title.'},
+    {q:'Football mein \'Counter-Attack\' style kis cheez par depend karta hai?', o:['Tez transition defense se attack ki taraf','Slow buildup','Sirf set-pieces','Long possession'], a:0, f:'Counter-attacking football mein team ball haasil karte hi tezi se opponent ke defense ki taraf transition karti hai.'}
+  ]
+},
+{
+  id:'worldhist', title:'World History', sub:'Ancient to Modern', emoji:'🏛️',
+  grad:'linear-gradient(135deg,#3a2a17,#7a5230 55%,#d9b979)',
+  theme:{bg:'#1c140a', font:"'Playfair Display',serif", accent:'#e0b968', text:'#f6ecd8', border:'rgba(224,185,104,.3)', optbg:'rgba(255,255,255,.06)'},
+  questions:[
+    {q:'Great Pyramid of Giza kis mulk mein hai?', o:['Sudan','Egypt','Iraq','Jordan'], a:1, f:'Great Pyramid Egypt ke shehar Giza mein hai — ancient world ke saat wonders mein se ek.'},
+    {q:'Ancient Egypt ki civilization kis darya ke kinare develop hui?', o:['Tigris','Euphrates','Nile','Indus'], a:2, f:'Ancient Egyptian civilization Nile river ke kinare develop hui.'},
+    {q:'Duniya ki sab se qadeem likhi hui likhawat (writing system) kaunsi mani jati hai?', o:['Cuneiform','Hieroglyphics','Chinese script','Sanskrit'], a:0, f:'Cuneiform, jo Mesopotamia mein banaya gaya, duniya ki sab se qadeem writing systems mein se ek hai.'},
+    {q:'Mesopotamia civilization kin do darya on ke darmiyan thi?', o:['Nile aur Amazon','Tigris aur Euphrates','Indus aur Ganges','Yangtze aur Yellow River'], a:1, f:'Mesopotamia \'do darya on ke darmiyan ki zameen\' thi — Tigris aur Euphrates.'},
+    {q:'Ancient Greece mein democracy ka concept sab se pehle kis shehar mein develop hua?', o:['Sparta','Athens','Corinth','Thebes'], a:1, f:'Athens ko ancient democracy ka gehwara mana jata hai.'},
+    {q:'Alexander the Great kis mulk/civilization ka badshah tha?', o:['Rome','Macedon (Greece)','Persia','Egypt'], a:1, f:'Alexander the Great Macedon (ancient Greek kingdom) ka badshah tha.'},
+    {q:'Roman Empire ka capital kaunsa shehar tha?', o:['Athens','Rome','Constantinople','Carthage'], a:1, f:'Roman Empire ka original capital Rome shehar tha.'},
+    {q:'Western Roman Empire kis saal khatam hui?', o:['376 AD','476 AD','576 AD','676 AD'], a:1, f:'476 AD mein Western Roman Empire ka khatma hua.'},
+    {q:'Eastern Roman Empire ko baad mein kis naam se jana gaya?', o:['Ottoman Empire','Byzantine Empire','Persian Empire','Holy Roman Empire'], a:1, f:'Eastern Roman Empire baad mein \'Byzantine Empire\' ke naam se mashhoor hua, jo 1453 tak qaim raha.'},
+    {q:'Great Wall of China ka maqsad kya tha?', o:['Trade route banana','Invasions se hifazat','Religious site','Agriculture ke liye'], a:1, f:'Great Wall of China northern invasions se hifazat ke liye banai gayi thi.'},
+    {q:'Great Wall of China ki lambai approximately kitni hai?', o:['~5,000 km','~21,000 km','~10,000 km','~15,000 km'], a:1, f:'Great Wall apni tamam branches milakar approximately 21,000 km lambi hai.'},
+    {q:'Duniya ka sab se lamba darya (river) kaun sa hai?', o:['Amazon','Nile','Yangtze','Mississippi'], a:1, f:'Nile river approximately 6,650 km lambi hai.'},
+    {q:'Prophet Muhammad (SAW) ki hijrat Makkah se Madina kis saal hui?', o:['610 AD','622 AD','632 AD','640 AD'], a:1, f:'Hijrat 622 AD mein hui, jis se Islamic calendar (Hijri) shuru hota hai.'},
+    {q:'Crusades kis do religions ke darmiyan jangain thin?', o:['Christianity aur Islam','Hinduism aur Buddhism','Judaism aur Christianity','Islam aur Judaism'], a:0, f:'Crusades medieval Christian aur Muslim powers ke darmiyan Holy Land par control ke liye jangain thin.'},
+    {q:'Renaissance movement sab se pehle kis mulk mein shuru hui?', o:['France','Italy','Spain','Germany'], a:1, f:'Renaissance 14th century mein Italy se shuru hui aur poore Europe mein phaili.'},
+    {q:'Mongol Empire ka founder kaun tha?', o:['Kublai Khan','Genghis Khan','Timur','Attila'], a:1, f:'Genghis Khan ne duniya ki sab se badi land empire, Mongol Empire, ki bunyad rakhi.'},
+    {q:'Ottoman Empire ka aakhri khatma kis saal hua?', o:['1918','1922','1945','1900'], a:1, f:'Ottoman Empire 1922 mein khatam hui, jis ke baad modern Turkey banaya gaya.'},
+    {q:'Constantinople 1453 mein kis empire ne fatah kiya?', o:['Roman Empire','Ottoman Empire','Persian Empire','Mongol Empire'], a:1, f:'Ottoman Empire ne 1453 mein Constantinople fatah kiya, jis se Byzantine Empire ka khatma hua.'},
+    {q:'Black Death (plague) ne 14th century mein kis continent ko sab se zyada mutasir kiya?', o:['Asia','Europe','Africa','South America'], a:1, f:'Black Death ne 14th century mein Europe ki abadi ka bara hissa khatam kar diya.'},
+    {q:'Christopher Columbus ne America ka safar kis mulk ke liye kiya tha?', o:['Portugal','Spain','England','France'], a:1, f:'Columbus ne Spain ki taraf se 1492 mein America ka safar kiya.'},
+    {q:'Vasco da Gama ne kis mulk ka samandari raasta India tak dhoonda?', o:['Spain','England','Portugal','Netherlands'], a:2, f:'Vasco da Gama ne Portugal ki taraf se India tak samandari raasta dhoonda.'},
+    {q:'British East India Company ne India mein control kab shuru kiya (approx battle)?', o:['Battle of Plassey 1757','Battle of Panipat 1526','Battle of Buxar 1600','Battle of Waterloo 1815'], a:0, f:'Battle of Plassey (1757) ne British East India Company ki India mein control ki bunyad rakhi.'},
+    {q:'American Revolution/War of Independence kis saal shuru hui?', o:['1765','1775','1785','1795'], a:1, f:'American War of Independence 1775 mein shuru hui.'},
+    {q:'United States ne apni azadi ka elan kis saal kiya?', o:['1774','1776','1783','1789'], a:1, f:'Declaration of Independence 4 July 1776 ko sign hui.'},
+    {q:'French Revolution kis saal shuru hui?', o:['1776','1789','1804','1799'], a:1, f:'French Revolution 1789 mein shuru hui aur France ke poore political system ko badal diya.'},
+    {q:'French Revolution ke slogan mein kaunsa word shamil nahi tha?', o:['Liberty','Equality','Fraternity','Monarchy'], a:3, f:'French Revolution ka mashhoor slogan tha \'Liberty, Equality, Fraternity\' — Monarchy iske khilaf thi.'},
+    {q:'Napoleon Bonaparte kis mulk ka emperor bana?', o:['Italy','France','Spain','Austria'], a:1, f:'Napoleon Bonaparte France ka emperor bana aur Europe mein bara asar dikhaya.'},
+    {q:'Napoleon ki final haar kis jang mein hui?', o:['Battle of Austerlitz','Battle of Waterloo','Battle of Trafalgar','Battle of Leipzig'], a:1, f:'Napoleon ko 1815 mein Battle of Waterloo mein aakhri shikast hui.'},
+    {q:'Russian Revolution kis saal hui jis se Tsar ka khatma hua?', o:['1905','1917','1922','1930'], a:1, f:'Russian Revolution 1917 mein hui, jis se Tsar Nicholas II ka khatma hua aur communist government bani.'},
+    {q:'First World War kis saal shuru hui?', o:['1912','1914','1916','1918'], a:1, f:'WWI 1914 mein shuru hui aur 1918 tak jari rahi.'},
+    {q:'First World War kis waqiya ki wajah se shuru hui?', o:['Archduke Franz Ferdinand ka qatal','Pearl Harbor attack','Treaty of Versailles','Russian Revolution'], a:0, f:'Archduke Franz Ferdinand ke qatal (Sarajevo, 1914) ne WWI ka aghaz kiya.'},
+    {q:'First World War kis saal khatam hui?', o:['1916','1917','1918','1920'], a:2, f:'WWI 1918 mein khatam hui, jab Germany ne armistice sign ki.'},
+    {q:'Second World War kis saal shuru hui?', o:['1937','1939','1941','1943'], a:1, f:'WWII 1939 mein Germany ke Poland par hamle se shuru hui.'},
+    {q:'Second World War kis saal khatam hui?', o:['1943','1945','1947','1950'], a:1, f:'WWII 1945 mein khatam hui, jab Germany aur Japan ne surrender kiya.'},
+    {q:'WWII mein atom bomb kis do shehron par gira?', o:['Tokyo aur Osaka','Hiroshima aur Nagasaki','Kyoto aur Kobe','Yokohama aur Sapporo'], a:1, f:'USA ne August 1945 mein Hiroshima aur Nagasaki par atom bombs gira\'ay.'},
+    {q:'Adolf Hitler kis mulk ka leader tha WWII ke dauran?', o:['Italy','Germany','Austria','Japan'], a:1, f:'Adolf Hitler Nazi Germany ka leader tha.'},
+    {q:'WWII mein Holocaust ke dauran approximately kitne Jews maare gaye?', o:['1 million','3 million','6 million','10 million'], a:2, f:'Holocaust mein approximately 6 million Jews Nazi Germany dwara maare gaye.'},
+    {q:'United Nations kis saal bani?', o:['1919','1945','1950','1955'], a:1, f:'United Nations WWII ke foran baad 1945 mein bani.'},
+    {q:'League of Nations (UN se pehle) kab bani thi?', o:['1918','1919','1920','1922'], a:2, f:'League of Nations 1920 mein WWI ke baad bani, magar WWII rokne mein nakam rahi.'},
+    {q:'Cold War mukhtalif kin do superpowers ke darmiyan thi?', o:['USA aur China','USA aur USSR','UK aur Germany','France aur Russia'], a:1, f:'Cold War USA aur Soviet Union (USSR) ke darmiyan thi.'},
+    {q:'Berlin Wall kis saal gira?', o:['1985','1989','1991','1993'], a:1, f:'Berlin Wall 1989 mein gira, jo Cold War ke khatme ki ek badi alamat thi.'},
+    {q:'Berlin Wall kis saal banai gayi thi?', o:['1955','1961','1965','1970'], a:1, f:'Berlin Wall 1961 mein banai gayi, East aur West Berlin ko divide karne ke liye.'},
+    {q:'Soviet Union ka khatma kis saal hua?', o:['1989','1991','1993','1995'], a:1, f:'Soviet Union December 1991 mein tootkar 15 mulkon mein taqseem hui.'},
+    {q:'Chand par sab se pehle qadam kisne rakha?', o:['Buzz Aldrin','Yuri Gagarin','Neil Armstrong','John Glenn'], a:2, f:'Neil Armstrong 1969 mein chand par qadam rakhne wale pehle insan bane.'},
+    {q:'Duniya ka pehla artificial satellite kaunsa tha?', o:['Explorer 1','Sputnik 1','Vanguard 1','Telstar'], a:1, f:'Sputnik 1, jo Soviet Union ne 1957 mein launch kiya, duniya ka pehla artificial satellite tha.'},
+    {q:'Cuban Missile Crisis kis saal hui, jab duniya nuclear war ke bohat qareeb thi?', o:['1958','1962','1968','1972'], a:1, f:'Cuban Missile Crisis 1962 mein hui, USA aur USSR ke darmiyan tanao ka aik ahem waqia.'},
+    {q:'Vietnam War kis saal khatam hui?', o:['1970','1973','1975','1980'], a:2, f:'Vietnam War 1975 mein Saigon ke fall ke sath khatam hui.'},
+    {q:'India ne azadi kis saal hasil ki?', o:['1945','1947','1950','1952'], a:1, f:'India ne 15 August 1947 ko British se azadi hasil ki.'},
+    {q:'Pakistan ne azadi kab hasil ki?', o:['14 August 1947','15 August 1947','23 March 1940','11 September 1948'], a:0, f:'Pakistan 14 August 1947 ko ek azad mulk ke tor par wajood mein aaya.'},
+    {q:'China mein communist revolution kis saal kamyab hui?', o:['1945','1949','1953','1960'], a:1, f:'Mao Zedong ki leadership mein 1949 mein People\'s Republic of China bani.'},
+    {q:'Nelson Mandela South Africa ke president kab bane?', o:['1990','1994','1999','2000'], a:1, f:'Nelson Mandela 1994 mein South Africa ke pehle black president bane, apartheid ke khatme ke baad.'},
+    {q:'Apartheid system kis mulk mein tha?', o:['Zimbabwe','South Africa','Kenya','Nigeria'], a:1, f:'Apartheid ek racial segregation system tha jo South Africa mein decades tak raha.'},
+    {q:'East Pakistan Bangladesh kis saal bana?', o:['1965','1969','1971','1974'], a:2, f:'1971 mein East Pakistan alag ho kar Bangladesh bana.'},
+    {q:'Duniya mein kitne continents hain?', o:['5','6','7','8'], a:2, f:'Duniya mein 7 continents hain: Asia, Africa, North America, South America, Antarctica, Europe, Australia.'},
+    {q:'Duniya ka sab se chota mulk kaun sa hai?', o:['Monaco','San Marino','Vatican City','Liechtenstein'], a:2, f:'Vatican City area ke lihaz se duniya ka sab se chota mulk hai.'},
+    {q:'Modern Olympic Games ka aghaz kis saal hua?', o:['1886','1896','1900','1908'], a:1, f:'Modern Olympics 1896 mein Athens, Greece mein shuru hue.'},
+    {q:'Ancient Olympic Games kis mulk mein shuru hue the?', o:['Rome','Egypt','Greece','Persia'], a:2, f:'Ancient Olympics qadeem Greece mein shuru hue thay, Olympia ke maqam par.'},
+    {q:'Titanic ship kis saal doobi thi?', o:['1905','1912','1918','1920'], a:1, f:'RMS Titanic 1912 mein apne pehle safar mein doob gayi thi.'},
+    {q:'Great Depression kis daur mein duniya ki economy ko sab se zyada mutasir kar gayi?', o:['1920s','1929-1939','1945-1950','1960s'], a:1, f:'Great Depression 1929 mein shuru hui aur 1930s ke aakhir tak duniya ki economy ko mutasir karti rahi.'},
+    {q:'Magna Carta kis mulk ki history ka aham document hai?', o:['France','England','Spain','Germany'], a:1, f:'Magna Carta 1215 mein England mein sign hua, jo modern constitutional law ki bunyad mana jata hai.'},
+    {q:'Industrial Revolution sab se pehle kis mulk mein shuru hui?', o:['Germany','England','France','USA'], a:1, f:'Industrial Revolution 18th century mein England mein shuru hui.'},
+    {q:'Suez Canal kis mulk mein hai?', o:['Saudi Arabia','Egypt','Jordan','Israel'], a:1, f:'Suez Canal Egypt mein hai aur Mediterranean ko Red Sea se jorti hai.'},
+    {q:'Panama Canal kin do samandaron ko jorti hai?', o:['Atlantic aur Pacific','Indian aur Pacific','Atlantic aur Indian','Arctic aur Pacific'], a:0, f:'Panama Canal Atlantic aur Pacific Oceans ko jorti hai.'},
+    {q:'Dubai ki Burj Khalifa duniya ki sab se unchi building kab bani?', o:['2008','2010','2012','2015'], a:1, f:'Burj Khalifa 2010 mein complete hui aur duniya ki sab se unchi building ban gayi.'},
+    {q:'9/11 attacks kis saal hue jinhon ne modern world politics ko badal diya?', o:['1998','2001','2003','2005'], a:1, f:'September 11, 2001 ko USA mein terrorist attacks hue jinhon ne global politics par bara asar dala.'},
+    {q:'Arab Spring movement kis saal shuru hua?', o:['2008','2010','2011','2013'], a:2, f:'Arab Spring 2010 ke akhir/2011 ki shuruat mein Tunisia se shuru hua aur Middle East mein phaila.'},
+    {q:'Indus Valley Civilization kis khittay mein develop hui?', o:['Present-day Pakistan/India border area','Egypt','Mesopotamia','China'], a:0, f:'Indus Valley Civilization present-day Pakistan aur northwest India ke ilaqon mein thi.'},
+    {q:'Mohenjo-daro kis mulk mein sthit hai?', o:['India','Pakistan','Bangladesh','Afghanistan'], a:1, f:'Mohenjo-daro Sindh, Pakistan mein sthit ek ancient Indus Valley site hai.'},
+    {q:'Mughal Empire ka founder kaun tha?', o:['Akbar','Babur','Humayun','Shah Jahan'], a:1, f:'Babur ne 1526 mein Mughal Empire ki bunyad rakhi, Battle of Panipat ke baad.'},
+    {q:'Taj Mahal kis Mughal badshah ne banwaya?', o:['Akbar','Jahangir','Shah Jahan','Aurangzeb'], a:2, f:'Shah Jahan ne Taj Mahal apni begum Mumtaz Mahal ki yaad mein banwaya.'},
+    {q:'Ottoman Empire ka markaz kaunsa shehar tha?', o:['Baghdad','Cairo','Istanbul (Constantinople)','Damascus'], a:2, f:'Ottoman Empire ka capital Istanbul (purana naam Constantinople) tha.'},
+    {q:'Persian Empire ka founder kaun tha?', o:['Darius the Great','Cyrus the Great','Xerxes','Alexander'], a:1, f:'Cyrus the Great ne Achaemenid Persian Empire ki bunyad rakhi.'},
+    {q:'Printing press ka ijaad kisne kiya?', o:['Isaac Newton','Johannes Gutenberg','Leonardo da Vinci','Galileo'], a:1, f:'Johannes Gutenberg ne 15th century mein printing press ijaad ki, jis se knowledge phailana asaan hua.'},
+    {q:'Leonardo da Vinci kis renaissance period ke mashhoor figure the?', o:['Painter aur scientist','Sirf soldier','Sirf king','Sirf religious leader'], a:0, f:'Leonardo da Vinci ek painter, scientist, engineer aur inventor thay — Renaissance ke sab se bare polymaths mein se ek.'},
+    {q:'Mona Lisa painting kisne banai?', o:['Michelangelo','Leonardo da Vinci','Raphael','Donatello'], a:1, f:'Mona Lisa Leonardo da Vinci ki sab se mashhoor painting hai.'},
+    {q:'Isaac Newton ne kaunsi famous law discover ki?', o:['Theory of Relativity','Law of Gravity','Theory of Evolution','Periodic Table'], a:1, f:'Isaac Newton ne Law of Gravity aur motion ke laws discover kiye.'},
+    {q:'Charles Darwin apni kis theory ki wajah se mashhoor hain?', o:['Theory of Relativity','Theory of Evolution','Theory of Gravity','Big Bang Theory'], a:1, f:'Charles Darwin ne \'Theory of Evolution by Natural Selection\' pesh ki.'},
+    {q:'Albert Einstein apni kis theory ki wajah se mashhoor hain?', o:['Theory of Relativity','Theory of Evolution','Law of Gravity','Periodic Table'], a:0, f:'Albert Einstein ne Theory of Relativity di, jo modern physics ki bunyad hai.'},
+    {q:'Marie Curie kis field mein apni research ki wajah se mashhoor hain?', o:['Radioactivity','Evolution','Astronomy','Mathematics'], a:0, f:'Marie Curie ne radioactivity par research ki aur do Nobel Prizes jeetne wali pehli shakhs bani.'},
+    {q:'Thomas Edison ne kaunsi mashhoor cheez ijaad ki?', o:['Telephone','Practical light bulb','Airplane','Automobile'], a:1, f:'Thomas Edison ne practical electric light bulb ijaad ki (behtar banai)।'},
+    {q:'Wright Brothers kis cheez ki wajah se mashhoor hain?', o:['Automobile ijaad','Pehli powered airplane flight','Telephone ijaad','Radio ijaad'], a:1, f:'Wright Brothers ne 1903 mein duniya ki pehli powered aircraft flight ki.'},
+    {q:'World Health Organization (WHO) kis saal bani?', o:['1945','1948','1950','1955'], a:1, f:'WHO 1948 mein bani, United Nations ke ek specialized agency ke tor par.'},
+    {q:'Treaty of Versailles kis war ke baad sign hui?', o:['WWI','WWII','Cold War','Vietnam War'], a:0, f:'Treaty of Versailles 1919 mein WWI ke baad sign hui, jis mein Germany par sakht sharait lagai gain.'},
+    {q:'Karl Marx ne kaunsi mashhoor kitab likhi jo communism ki bunyad bani?', o:['The Republic','Das Kapital','The Prince','War and Peace'], a:1, f:'Karl Marx ne \'Das Kapital\' likhi, jo communist economic theory ki bunyad hai.'},
+    {q:'Mahatma Gandhi apni kis philosophy ki wajah se mashhoor hain?', o:['Armed resistance','Non-violent civil disobedience (Ahimsa)','Military strategy','Economic reform'], a:1, f:'Gandhi ne non-violent resistance ka raasta apnaya, jo Indian independence movement ka markazi hissa tha.'},
+    {q:'Winston Churchill kis mulk ke Prime Minister thay WWII ke dauran?', o:['France','United Kingdom','USA','Germany'], a:1, f:'Winston Churchill UK ke Prime Minister thay aur WWII mein important leadership role ada ki.'},
+    {q:'Franklin D. Roosevelt kis mulk ke President thay WWII ke ziyada tar arse mein?', o:['UK','USA','France','Canada'], a:1, f:'Franklin D. Roosevelt USA ke president thay jo WWII ke doran America ki leadership kar rahe thay.'},
+    {q:'Vladimir Lenin kis revolution ka leader tha?', o:['French Revolution','Russian Revolution','American Revolution','Chinese Revolution'], a:1, f:'Vladimir Lenin ne 1917 ki Russian Revolution ki leadership ki.'},
+    {q:'Julius Caesar kis empire/republic ka leader tha?', o:['Greek Empire','Roman Republic','Persian Empire','Egyptian Kingdom'], a:1, f:'Julius Caesar Roman Republic ka mashhoor general aur leader tha.'},
+    {q:'Cleopatra kis mulk ki mashhoor queen thi?', o:['Rome','Greece','Egypt','Persia'], a:2, f:'Cleopatra ancient Egypt ki aakhri active pharaoh/queen thi.'},
+    {q:'Great Fire of London kis saal hui?', o:['1566','1666','1766','1866'], a:1, f:'Great Fire of London 1666 mein hui, jis ne shehar ka bara hissa jala diya.'},
+    {q:'Boston Tea Party kis mulk ki history ka ahem waqia hai?', o:['England','USA','France','Canada'], a:1, f:'Boston Tea Party 1773 mein hua aur American Revolution ki taraf ek qadam tha.'},
+    {q:'Spanish Armada kis saal England par hamla awar hui (magar shikast khai)?', o:['1588','1600','1650','1700'], a:0, f:'Spanish Armada 1588 mein England par hamla awar hui magar shikast khai.'},
+    {q:'Duniya mein sab se pehla telephone call kisne ki?', o:['Thomas Edison','Alexander Graham Bell','Nikola Tesla','Guglielmo Marconi'], a:1, f:'Alexander Graham Bell ko telephone ka inventor mana jata hai.'},
+    {q:'Renaissance period approximately kis sadi se kis sadi tak rahi?', o:['12th-13th century','14th-17th century','18th-19th century','19th-20th century'], a:1, f:'Renaissance approximately 14th se 17th century tak Europe mein phaili rahi.'},
+    {q:'Lahore Resolution (Pakistan Resolution) kis saal pass hui?', o:['1930','1940','1946','1935'], a:1, f:'23 March 1940 ko Lahore Resolution pass hui, jo Pakistan Movement ka ek ahem sangm tha.'},
+    {q:'Allama Iqbal ko kis khitab se yaad kiya jata hai?', o:['Quaid-e-Azam','Shair-e-Mashriq','Baba-e-Qaum','Sarhad Gandhi'], a:1, f:'Allama Muhammad Iqbal ko \'Shair-e-Mashriq\' (Poet of the East) ka khitab diya gaya.'},
+    {q:'Muhammad Ali Jinnah ko Pakistan mein kis khitab se yaad kiya jata hai?', o:['Shair-e-Mashriq','Quaid-e-Azam','Baba-e-Qaum sirf India mein','Mard-e-Momin'], a:1, f:'Muhammad Ali Jinnah ko \'Quaid-e-Azam\' (Great Leader) kaha jata hai.'},
+    {q:'United Nations Security Council ke kitne permanent members hain?', o:['3','4','5','6'], a:2, f:'UNSC ke 5 permanent members hain: USA, UK, France, Russia, aur China.'},
+    {q:'Duniya ki sab se lambi surviving ancient wonder kaunsi hai?', o:['Colossus of Rhodes','Great Pyramid of Giza','Hanging Gardens','Lighthouse of Alexandria'], a:1, f:'Great Pyramid of Giza qadeem 7 wonders mein se akeli hai jo aaj bhi mojood hai.'},
+    {q:'Ancient Greece ki philosophy mein Socrates, Plato aur Aristotle ka rishta kya tha?', o:['Teacher-student chain','Bhai','Rivals','Koi rishta nahi'], a:0, f:'Socrates ne Plato ko sikhaya, aur Plato ne Aristotle ko — ek famous teacher-student chain.'},
+    {q:'Spartacus kis empire ke khilaf slave revolt ka leader tha?', o:['Persian Empire','Roman Republic','Ottoman Empire','Greek city-states'], a:1, f:'Spartacus ne Roman Republic ke khilaf mashhoor slave revolt (73-71 BC) ki leadership ki.'},
+    {q:'Hiroshima par atom bomb kis din gira?', o:['6 August 1945','9 August 1945','15 August 1945','1 September 1945'], a:0, f:'Hiroshima par atom bomb 6 August 1945 ko gira, aur Nagasaki par 9 August 1945 ko.'},
+    {q:'Yalta Conference kin leaders ke darmiyan hui thi WWII ke aakhir mein?', o:['Churchill, Roosevelt, Stalin','Hitler, Mussolini, Tojo','Churchill, Hitler, Stalin','Roosevelt, Churchill, Hirohito'], a:0, f:'Yalta Conference (1945) mein Churchill, Roosevelt aur Stalin ne post-war Europe ka plan banaya.'},
+    {q:'Silk Road kis maqsad ke liye mashhoor tha?', o:['Trade route between East aur West','Military campaign','Religious pilgrimage route','Sirf gold ki tijarat'], a:0, f:'Silk Road ek trade network tha jo China ko Europe aur Middle East se jorta tha.'},
+    {q:'Qutb Minar kis mulk mein sthit hai?', o:['Pakistan','India','Bangladesh','Afghanistan'], a:1, f:'Qutb Minar Delhi, India mein sthit hai — ek historic minaret.'}
+  ]
+}
+];
+
+let current = null;
+let qIndex = 0;
+let score = 0;
+let answered = false;
+
+const grid = document.getElementById('grid');
+QUIZZES.forEach((quiz, i)=>{
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.setProperty('--grad', quiz.grad);
+  card.innerHTML = `
+    <div class="qcount">${quiz.questions.length} Q</div>
+    <div class="emoji">${quiz.emoji}</div>
+    <div class="title">${quiz.title}</div>
+    <div class="sub">${quiz.sub}</div>
+  `;
+  card.onclick = ()=> startQuiz(i);
+  grid.appendChild(card);
+});
+
+const overlay = document.getElementById('overlay');
+const qbody = document.getElementById('qbody');
+const progBar = document.getElementById('progBar');
+const scoreTag = document.getElementById('scoreTag');
+document.getElementById('backBtn').onclick = closeQuiz;
+
+function applyTheme(t){
+  overlay.style.setProperty('--qbg', t.bg);
+  overlay.style.setProperty('--qfont', t.font);
+  overlay.style.setProperty('--qaccent', t.accent);
+  overlay.style.setProperty('--qtext', t.text);
+  overlay.style.setProperty('--qborder', t.border);
+  overlay.style.setProperty('--qoptbg', t.optbg);
+}
+
+function startQuiz(i){
+  current = QUIZZES[i];
+  qIndex = 0; score = 0;
+  applyTheme(current.theme);
+  overlay.classList.add('active');
+  renderQuestion();
+}
+
+function closeQuiz(){
+  overlay.classList.remove('active');
+  current = null;
+}
+
+function renderQuestion(){
+  answered = false;
+  const total = current.questions.length;
+  progBar.style.width = ((qIndex)/total*100)+'%';
+  scoreTag.textContent = score+'/'+total;
+
+  if(qIndex >= total){
+    renderResult();
+    return;
+  }
+  const item = current.questions[qIndex];
+  qbody.innerHTML = `
+    <div class="quizTitle">${current.emoji} ${current.title}</div>
+    <div class="qnum">Question ${qIndex+1} of ${total}</div>
+    <div class="question">${item.q}</div>
+    <div class="options" id="optsWrap"></div>
+    <div class="factBox" id="factBox"></div>
+    <button class="nextBtn" id="nextBtn">Next →</button>
+  `;
+  const optsWrap = document.getElementById('optsWrap');
+  item.o.forEach((opt, idx)=>{
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.textContent = opt;
+    b.onclick = ()=> selectOption(idx, b);
+    optsWrap.appendChild(b);
+  });
+  document.getElementById('nextBtn').onclick = ()=>{ qIndex++; renderQuestion(); };
+}
+
+function selectOption(idx, btnEl){
+  if(answered) return;
+  answered = true;
+  const item = current.questions[qIndex];
+  const allOpts = document.querySelectorAll('#optsWrap .opt');
+  allOpts.forEach(o=>o.classList.add('disabled'));
+  if(idx === item.a){
+    btnEl.classList.add('correct');
+    score++;
+  } else {
+    btnEl.classList.add('wrong');
+    allOpts[item.a].classList.add('correct');
+  }
+  const fb = document.getElementById('factBox');
+  fb.textContent = '💡 '+item.f;
+  fb.classList.add('show');
+  document.getElementById('nextBtn').classList.add('show');
+  scoreTag.textContent = score+'/'+current.questions.length;
+}
+
+function renderResult(){
+  const total = current.questions.length;
+  progBar.style.width = '100%';
+  let msg, big;
+  const pct = score/total;
+  if(pct === 1){ big='🏆'; msg='Zabardast! Sab sahi jawab!'; }
+  else if(pct >= 0.7){ big='🎉'; msg='Bohat khoob! Achi knowledge hai.'; }
+  else if(pct >= 0.4){ big='👍'; msg='Achi koshish! Thora aur seekho.'; }
+  else { big='📚'; msg='Koi baat nahi, dobara try karo!'; }
+
+  qbody.innerHTML = `
+    <div class="resultWrap">
+      <div class="big">${big}</div>
+      <h2>Score: ${score} / ${total}</h2>
+      <p>${msg}</p>
+      <div class="resultBtns">
+        <button class="retryBtn" id="retryBtn">🔁 Retry</button>
+        <button class="homeBtn" id="homeBtn">🏠 Home</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('retryBtn').onclick = ()=>{ qIndex=0; score=0; renderQuestion(); };
+  document.getElementById('homeBtn').onclick = closeQuiz;
+}
+</script>
+</body>
+</html>
