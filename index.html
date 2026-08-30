@@ -246,7 +246,7 @@
 
 <header>
   <h1>🌍 World Football &amp; History</h1>
-  <p>2 Quizzes • 100+ Questions Each • Latest 2026 Info</p>
+  <p>4 Quizzes • General Knowledge • Latest 2026 Info</p>
 </header>
 
 <div class="grid" id="grid"></div>
@@ -489,6 +489,60 @@ const QUIZZES = [
     {q:'Yalta Conference kin leaders ke darmiyan hui thi WWII ke aakhir mein?', o:['Churchill, Roosevelt, Stalin','Hitler, Mussolini, Tojo','Churchill, Hitler, Stalin','Roosevelt, Churchill, Hirohito'], a:0, f:'Yalta Conference (1945) mein Churchill, Roosevelt aur Stalin ne post-war Europe ka plan banaya.'},
     {q:'Silk Road kis maqsad ke liye mashhoor tha?', o:['Trade route between East aur West','Military campaign','Religious pilgrimage route','Sirf gold ki tijarat'], a:0, f:'Silk Road ek trade network tha jo China ko Europe aur Middle East se jorta tha.'},
     {q:'Qutb Minar kis mulk mein sthit hai?', o:['Pakistan','India','Bangladesh','Afghanistan'], a:1, f:'Qutb Minar Delhi, India mein sthit hai — ek historic minaret.'}
+  ]
+},
+{
+  id:'islamic', title:'Islamic History', sub:'Prophets • Khilafat • Events', emoji:'🕌',
+  grad:'linear-gradient(135deg,#062a24,#0e6c5a 55%,#e8e8e8)',
+  theme:{bg:'#03110e', font:"'Merriweather',serif", accent:'#4fd8b8', text:'#f0fffb', border:'rgba(79,216,184,.3)', optbg:'rgba(255,255,255,.06)'},
+  questions:[
+    {q:'Prophet Muhammad (SAW) ki paidaish kis shehar mein hui?', o:['Madina','Makkah','Taif','Damascus'], a:1, f:'Prophet Muhammad (SAW) 570 AD mein Makkah mein paida huay.'},
+    {q:'Islam ka pehla khalifa kaun tha?', o:['Hazrat Umar (RA)','Hazrat Abu Bakr (RA)','Hazrat Usman (RA)','Hazrat Ali (RA)'], a:1, f:'Hazrat Abu Bakr Siddiq (RA) Islam ke pehle khalifa banay.'},
+    {q:'Khulafa-e-Rashideen mein kitne khalifa shamil hain?', o:['3','4','5','6'], a:1, f:'Khulafa-e-Rashideen (Rightly Guided Caliphs) mein 4 khalifa shamil hain: Abu Bakr, Umar, Usman aur Ali (RA).'},
+    {q:'Quran Majeed poori tarah kitne saalon mein nazil hua?', o:['13 saal','23 saal','33 saal','10 saal'], a:1, f:'Quran approximately 23 saal ke arse mein nazil hua.'},
+    {q:'Islam ka pehla stone building (Kaaba ke ilawa) kaunsi masjid mani jati hai?', o:['Masjid-e-Nabawi','Masjid-e-Quba','Masjid al-Aqsa','Masjid al-Haram'], a:1, f:'Masjid-e-Quba Islam ki pehli masjid mani jati hai, jo Madina ke qareeb hai.'},
+    {q:'Ghazwa-e-Badr kis saal hui?', o:['1 Hijri','2 Hijri','3 Hijri','5 Hijri'], a:1, f:'Ghazwa-e-Badr 2 Hijri mein hui, jo Islam ki pehli badi jang thi.'},
+    {q:'Fatah-e-Makkah kis saal hui?', o:['6 Hijri','7 Hijri','8 Hijri','9 Hijri'], a:2, f:'Fatah-e-Makkah 8 Hijri mein hui, jab Muslims ne bina jang ke Makkah fatah kiya.'},
+    {q:'Hazrat Umar (RA) ka khilafat ka daur kitne saal raha?', o:['5 saal','10 saal','15 saal','20 saal'], a:1, f:'Hazrat Umar (RA) ka khilafat ka daur taqreeban 10 saal raha.'},
+    {q:'Hazrat Usman (RA) ki sab se badi khidmat kya mani jati hai?', o:['Quran ko ek standard nuskhe mein jama karna','Jang jeetna','Masjid banwana','Hijrat karna'], a:0, f:'Hazrat Usman (RA) ne Quran ko ek standard, mustanad nuskhe (Usmani Mushaf) mein jama karwaya.'},
+    {q:'Karbala ka waqia kis Hijri saal mein hua?', o:['61 Hijri','65 Hijri','70 Hijri','50 Hijri'], a:0, f:'Karbala ka waqia 61 Hijri (680 AD) mein hua, jisme Hazrat Imam Hussain (RA) shaheed huay.'},
+    {q:'Islamic calendar (Hijri) ki shuruat kis waqiye se hoti hai?', o:['Prophet ki paidaish','Hijrat (Makkah se Madina)','Fatah-e-Makkah','Ghazwa-e-Badr'], a:1, f:'Hijri calendar Hijrat (622 AD) se shuru hota hai, jab Prophet (SAW) Makkah se Madina gaye.'},
+    {q:'Masjid al-Aqsa kis shehar mein sthit hai?', o:['Makkah','Madina','Jerusalem','Damascus'], a:2, f:'Masjid al-Aqsa Jerusalem mein sthit hai aur Islam ke teen muqaddas maqamat mein se ek hai.'},
+    {q:'Umayyad Khilafat ka darul hukumat (capital) kaunsa shehar tha?', o:['Baghdad','Damascus','Cairo','Istanbul'], a:1, f:'Umayyad Khilafat ka capital Damascus (Syria) tha.'},
+    {q:'Abbasid Khilafat ka darul hukumat kaunsa shehar tha?', o:['Damascus','Baghdad','Cairo','Cordoba'], a:1, f:'Abbasid Khilafat ka capital Baghdad tha, jo elm-o-adab ka bara markaz bana.'},
+    {q:'Muhammad bin Qasim ne Sindh par fatah kis saal hasil ki?', o:['612 AD','712 AD','812 AD','912 AD'], a:1, f:'Muhammad bin Qasim ne 712 AD mein Sindh fatah kiya, jo baras-e-saghir mein Islam ki aamad ka aghaz mana jata hai.'},
+    {q:'Salahuddin Ayyubi kis waqiye ki wajah se mashhoor hain?', o:['Jerusalem ko Crusaders se azad karwana','Baghdad fatah karna','Spain fatah karna','Quran jama karna'], a:0, f:'Salahuddin Ayyubi ne 1187 mein Jerusalem ko Crusaders se azad karwaya.'},
+    {q:'Islam ke panch buniyadi arkaan (pillars) mein se pehla kya hai?', o:['Namaz','Kalma (Shahadat)','Roza','Zakat'], a:1, f:'Islam ka pehla rukn Kalma (Shahadat — imaan ka izhar) hai.'},
+    {q:'Hajj kis mahine mein farz hota hai?', o:['Ramadan','Shawwal','Zil-Hajj','Muharram'], a:2, f:'Hajj Islamic calendar ke Zil-Hajj mahine mein ada hota hai.'},
+    {q:'Roza rakhna kis Islamic mahine mein farz hai?', o:['Rajab','Shaban','Ramadan','Zil-Qada'], a:2, f:'Roza rakhna Ramadan al-Mubarak ke mahine mein farz hai.'},
+    {q:'Al-Andalus (Muslim Spain) ka sab se mashhoor shehar-e-ilm kaunsa tha?', o:['Cordoba','Madrid','Barcelona','Seville'], a:0, f:'Cordoba Muslim Spain (Al-Andalus) mein elm-o-tehzeeb ka bara markaz tha.'}
+  ]
+},
+{
+  id:'science', title:'General Science', sub:'Facts • Discoveries • Space', emoji:'🔬',
+  grad:'linear-gradient(135deg,#1a1a3a,#3a3a8c 55%,#8ce8ff)',
+  theme:{bg:'#0d0d22', font:"'Exo 2',sans-serif", accent:'#7cd6ff', text:'#eef8ff', border:'rgba(124,214,255,.3)', optbg:'rgba(255,255,255,.06)'},
+  questions:[
+    {q:'Insani jism mein sab se bara organ kaunsa hai?', o:['Dil (Heart)','Jigar (Liver)','Jild (Skin)','Dimagh (Brain)'], a:2, f:'Jild (Skin) insani jism ka sab se bara organ hai.'},
+    {q:'Paani ka chemical formula kya hai?', o:['CO2','H2O','O2','NaCl'], a:1, f:'Paani ka chemical formula H2O hai — do hydrogen aur ek oxygen atom.'},
+    {q:'Hamare solar system ka sab se bara planet kaunsa hai?', o:['Saturn','Earth','Jupiter','Neptune'], a:2, f:'Jupiter hamare solar system ka sab se bara planet hai.'},
+    {q:'Sooraj se sab se qareeb planet kaunsa hai?', o:['Venus','Mercury','Earth','Mars'], a:1, f:'Mercury Sooraj se sab se qareeb planet hai.'},
+    {q:'Insani jism mein kitni haddiyan (bones) hoti hain (adult)?', o:['186','206','226','246'], a:1, f:'Ek adult insani jism mein 206 haddiyan hoti hain.'},
+    {q:'Photosynthesis process ke dauran paudhay kya banate hain?', o:['Oxygen aur glucose','Sirf carbon dioxide','Nitrogen','Sirf paani'], a:0, f:'Photosynthesis mein paudhay sunlight, paani aur CO2 se oxygen aur glucose banate hain.'},
+    {q:'Duniya ka sab se bara samandar (ocean) kaunsa hai?', o:['Atlantic','Indian','Pacific','Arctic'], a:2, f:'Pacific Ocean area ke lihaz se duniya ka sab se bara samandar hai.'},
+    {q:'DNA ka poora naam kya hai?', o:['Deoxyribonucleic Acid','Dinucleic Acid','Diribose Nucleic Acid','Deoxy Nitric Acid'], a:0, f:'DNA ka poora naam Deoxyribonucleic Acid hai, jo genetic information carry karta hai.'},
+    {q:'Insan ke dil (heart) mein kitne chambers hote hain?', o:['2','3','4','5'], a:2, f:'Insani dil mein 4 chambers hote hain: 2 atria aur 2 ventricles.'},
+    {q:'Periodic table mein sab se halka element kaunsa hai?', o:['Helium','Oxygen','Hydrogen','Nitrogen'], a:2, f:'Hydrogen periodic table ka sab se halka aur pehla element hai.'},
+    {q:'Zameen apne axis par ek chakkar kitne ghanton mein poora karti hai?', o:['12 ghante','24 ghante','36 ghante','48 ghante'], a:1, f:'Zameen apne axis par ek chakkar (rotation) 24 ghanton mein poora karti hai, jis se din-raat banta hai.'},
+    {q:'Insani jism ka normal temperature kitna hota hai?', o:['35°C','36.1°C','37°C','38.5°C'], a:2, f:'Insani jism ka average normal temperature 37°C (98.6°F) hota hai.'},
+    {q:'Kaunsi gas insan saans lene mein sab se zyada use karta hai?', o:['Carbon Dioxide','Nitrogen','Oxygen','Hydrogen'], a:2, f:'Insan saans lete waqt Oxygen use karta hai aur Carbon Dioxide chorta hai.'},
+    {q:'Newton ke teen laws kis cheez se related hain?', o:['Motion','Light','Heat','Electricity'], a:0, f:'Newton ke teen laws motion (harkat) aur force se related hain.'},
+    {q:'Insani jism mein khoon banane ka kaam kaunsa organ karta hai?', o:['Jigar','Bone marrow','Guray (Kidneys)','Phephray (Lungs)'], a:1, f:'Bone marrow (haddiyon ka gooda) khoon ke naye cells banane ka kaam karta hai.'},
+    {q:'Sab se qareeb star hamare solar system se (Sooraj ke ilawa) kaunsa hai?', o:['Sirius','Proxima Centauri','Alpha Centauri A','Betelgeuse'], a:1, f:'Proxima Centauri hamare Sooraj ke sab se qareeb star hai.'},
+    {q:'Insani body mein sab se taqatwar muscle kaunsa mana jata hai?', o:['Biceps','Jaw muscle (Masseter)','Heart muscle','Leg muscle'], a:1, f:'Jaw muscle (Masseter) apni size ke hisaab se insani jism ka sab se taqatwar muscle mana jata hai.'},
+    {q:'Ek light year kis cheez ki measurement hai?', o:['Waqt','Fasla (Distance)','Weight','Speed'], a:1, f:'Light year fasle (distance) ki measurement hai — light ek saal mein jitna fasla tay karti hai.'},
+    {q:'Insani jism ka sab se bara internal organ kaunsa hai?', o:['Jigar (Liver)','Dil (Heart)','Phephray (Lungs)','Guray (Kidneys)'], a:0, f:'Jigar (Liver) insani jism ka sab se bara internal organ hai.'},
+    {q:'Kaunsa planet apne unique rings ki wajah se mashhoor hai?', o:['Mars','Saturn','Venus','Mercury'], a:1, f:'Saturn apne khoobsurat aur mashhoor rings ki wajah se pehchana jata hai.'}
   ]
 }
 ];
